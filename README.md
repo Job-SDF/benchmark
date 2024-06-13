@@ -1,5 +1,6 @@
 <div align="center">
     <p> 
+    <img src="https://github.com/Job-SDF/benchmark/figs/title.png" width="440px">
     	<b>
         Job-SDF: A Multi-Granularity Dataset for Job Skill Demand Forecasting and Benchmarking <a href="" title="PDF">PDF</a>
         </b>
