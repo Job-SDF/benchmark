@@ -1,5 +1,4 @@
 <div align="center">
-    <img src="https://github.com/usail-hkust/UUKG/blob/main/title.png" width="440px">
     <p> 
     	<b>
         Job-SDF: A Multi-Granularity Dataset for Job Skill Demand Forecasting and Benchmarking <a href="" title="PDF">PDF</a>
@@ -44,7 +43,7 @@ Step 2: Install library
 pip install -r requirements.txt
 ```
 
-## 3. Dataset
+<!-- ## 3. Dataset
 
 We opensource two large-scale Urban Knowledge Graph (UrbanKG) datasets in New York and Chicago compatible with five Urban SpatioTemporal Prediction (USTP) tasks. As the original dataset is quite large, we have included example data, data processing code, and model code to assist researchers in understanding our work. The complete data sources can be found on [Google Drive](https://drive.google.com/drive/folders/1egTmnKRzTQuyW_hsbFURUonGC-bJmBHW?usp=sharing).
 
@@ -242,4 +241,4 @@ If you find our work is useful for your research, please consider citing:
   volume={36},
   year={2024}
 }
-``` -->
+``` --> -->
