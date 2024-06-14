@@ -87,6 +87,7 @@ python run.py [-h] [--root_path {../../dataset/demand, ../../dataset/proportion}
 ```
 ### 4.3 Pre-DyGAE
 ```bash
+run data_process.ipynb
 cd benchmark/predygae
 sh scripts/stage1.sh {r0,r1,...}
 sh scripts/stage2.sh {r0,r1,...} 24 36
