@@ -117,8 +117,9 @@ class LinkPredict(nn.Module):
         r = self.w_relation[triplets[:, 1]]
         o = input_embed[col_indices]
         # rg_origin_score = self.fc_rg(s * r * o).squeeze(-1)
-        rg_origin_score = (s * r * o).mean(dim=-1)
-        rg_score = self.rg_activate_fn(rg_origin_score)
+        rg_origin_score = (s * r * o).sum(dim=-1)
+        # rg_score = self.rg_activate_fn(rg_origin_score)
+        rg_score = rg_origin_score
         return rg_score
 
     def calc_lp_score(self, input_embed, triplets):
@@ -128,7 +129,8 @@ class LinkPredict(nn.Module):
         s = input_embed[row_indices]
         r = self.w_relation[triplets[:, 1]]
         o = input_embed[col_indices]
-        lp_score = torch.sum(s * r * o, dim=1)
+        lp_score = self.fc_rg(s * r * o)
+        # lp_score = torch.sum(s * r * o, dim=1)
         return lp_score
 
     def encoder(self, g, nids, std):
@@ -233,12 +235,6 @@ class LinkPredict(nn.Module):
             rg_loss = rg_loss_pos + rg_loss_neg
         else:
             rg_loss = 0
-
-        real_pred = self.scaler.inverse_transform(rg_score.detach().cpu().numpy())
-        real_gold = self.scaler.inverse_transform(edge_labels.detach().cpu().numpy())
-        real_mae = np.abs(real_pred - real_gold).mean()
-
-        
         reg_loss = self.regularization_loss(embedding)
 
         
@@ -304,7 +300,6 @@ class LinkPredict(nn.Module):
             kl_loss=float(kl_loss),
             diff_loss=float(diff_loss),
             embedding=embedding,
-            real_mae=real_mae
         )
 
     

@@ -98,8 +98,6 @@ class Trainer:
             for epoch in bar:
                 for batch_data in train_dataloader:  
 
-                    
-
                     step += 1
                     model.train()
                     if 'diff_labels' in self.g.edata:
@@ -122,7 +120,7 @@ class Trainer:
                         model.parameters(), max_norm=1.0)  
                     optimizer.step()
                     bar.set_description(
-                        f"mae:{outputs.real_mae}, loss:{outputs.loss}, lp_loss: {outputs.lp_loss}, rg_loss:{outputs.rg_loss}, rg_loss_pos:{outputs.rg_loss_pos}, rg_loss_neg:{outputs.rg_loss_neg}, rank_loss: {outputs.rank_loss}, con_loss: {outputs.con_loss}, kl_loss: {outputs.kl_loss}, diff_loss: {outputs.diff_loss}")
+                        f"loss:{outputs.loss}, lp_loss: {outputs.lp_loss}, rg_loss:{outputs.rg_loss}, rg_loss_pos:{outputs.rg_loss_pos}, rg_loss_neg:{outputs.rg_loss_neg}, rank_loss: {outputs.rank_loss}, con_loss: {outputs.con_loss}, kl_loss: {outputs.kl_loss}, diff_loss: {outputs.diff_loss}")
                         
                     if step % self.eval_step == 0:
                         logger.info(f"epoch {epoch},step {step}")
@@ -232,56 +230,26 @@ class Trainer:
 
                 all_lp_score = model.calc_lp_score(embed, all_triplets)
                 all_rg_score = model.calc_rg_score(embed, all_triplets)
-                regression_matrix_score = self.data.scaler.inverse_transform(all_rg_score.detach().cpu().numpy())
+                all_labels_score = self.g.edata['edge_labels']
+                # all_rg_score = torch.tensor(self.data.scaler.inverse_transform(all_rg_score.detach().cpu().numpy()))
+                # all_labels_score = torch.tensor(self.data.scaler.inverse_transform(self.g.edata['edge_labels'].detach().cpu().numpy()))
 
-                all_rg_matrix = torch.zeros(
-                    self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
-                all_rg_matrix[all_triplets[:, 0], all_triplets[:,
-                                                               2] - self.pos_num_nodes] = all_rg_score
+                all_rg_matrix = torch.zeros(self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
+                all_rg_matrix[all_triplets[:, 0], all_triplets[:,2] - self.pos_num_nodes] = all_rg_score
 
-                all_lp_matrix = torch.zeros(
-                    self.pos_num_nodes, self.skill_num_nodes).to(all_lp_score.device)
-                all_lp_matrix[all_triplets[:, 0], all_triplets[:,
-                                                               2] - self.pos_num_nodes] = all_lp_score
+                all_lp_matrix = torch.zeros(self.pos_num_nodes, self.skill_num_nodes).to(all_lp_score.device)
+                all_lp_matrix[all_triplets[:, 0], all_triplets[:,2] - self.pos_num_nodes] = all_lp_score.squeeze(-1)
 
-                all_labels = torch.zeros(
-                    self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
-                all_labels[self.triplets[self.eval_mask][:, 0], self.triplets[self.eval_mask]
-                           [:, 2] - self.pos_num_nodes] = self.eval_g.edata['edge_labels'].to(device)
+                all_labels = torch.zeros(self.pos_num_nodes, self.skill_num_nodes).to(all_labels_score.device)
+                all_labels[self.triplets[:, 0], self.triplets[:, 2] -self.pos_num_nodes] = all_labels_score
 
-                if self.time == 'no':
-                    all_labels = torch.zeros(
-                        self.pos_num_nodes, self.skill_num_nodes).to(all_lp_score.device)
-                    all_labels[self.triplets[self.eval_mask][:, 0], self.triplets[self.eval_mask][:, 2] -
-                               self.pos_num_nodes] = self.eval_g.edata['edge_labels'].to(all_lp_score.device)
-
-                    all_lp_matrix = torch.zeros(
-                        self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
-                    all_lp_matrix[all_triplets[:, 0], all_triplets[:, 2] -
-                                  self.pos_num_nodes] = torch.nn.Sigmoid()(all_lp_score)
-                    all_lp_matrix[self.triplets[self.train_mask | self.test_mask][:, 0],
-                                  self.triplets[self.train_mask | self.test_mask][:, 2] - self.pos_num_nodes] = 0
-
-                    all_rg_matrix = torch.zeros(
-                        self.pos_num_nodes, self.skill_num_nodes).to(all_rg_score.device)
-                    all_rg_matrix[all_triplets[:, 0], all_triplets[:,
-                                                                   2] - self.pos_num_nodes] = all_rg_score
-                    all_rg_matrix[self.triplets[self.train_mask | self.test_mask][:, 0],
-                                  self.triplets[self.train_mask | self.test_mask][:, 2] - self.pos_num_nodes] = 0
-
-                metric['regression'] = time_metric(
-                    all_labels, all_rg_matrix)
-                metric['link_prediction'] = time_metric(
-                    all_labels, all_lp_matrix)
-                metric['mrr'] = max(
-                    metric['regression']['MRR'], metric['link_prediction']['MRR'])
-                final_metric = {m: metric['link_prediction'][m]
-                                for m in ['AUC', 'Hits@1', 'Hits@3', "MRR"]}
-                final_metric.update({m: metric['regression'][m] for m in [
-                                    'EGM', 'MAE', 'MAPE', "RMSE"]})
-                logger.info(metric)
+                metric['regression'] = time_metric(all_labels.detach().cpu(), all_rg_matrix.detach().cpu())
+                metric['link_prediction'] = time_metric(all_labels.detach().cpu(), all_lp_matrix.detach().cpu())
+                # metric['mrr'] = max(metric['regression']['MRR'], metric['link_prediction']['MRR'])
+                final_metric = {m: metric['regression'][m] for m in ['EGM', 'MAE', 'MAPE', "RMSE"]}
+                final_metric.update({m: metric['link_prediction'][m] for m in ['AUC', 'Hits@1', 'Hits@3', "MRR"]})
+                # logger.info(metric)
                 logger.info(final_metric)
-
                 
                 if mode == 'test':
                     np.save(self.scores_path[:-3] + '.npy', regression_matrix_score)
