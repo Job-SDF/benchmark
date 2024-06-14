@@ -95,6 +95,7 @@ sh scripts/stage3.sh {r0,r1,...} 24 36
 ```
 ### 4.4 Graph-based time series forecasting
 ```bash
+run data_process.ipynb
 cd benchmark/graph_method
 python main.py [-h] [--data_name {r0, r1,...}]
       [--model {EvolveGCNH, EvolveGCNO}]
