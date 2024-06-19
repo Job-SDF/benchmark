@@ -18,7 +18,7 @@
 </p>
 </div>
 
-Official repository of paper [&#34;Job-SDF: A Multi-Granularity Dataset for Job Skill Demand Forecasting and Benchmarking&#34;](). Please star, watch and fork our repo for the active updates!
+Official repository of paper [&#34;Job-SDF: A Multi-Granularity Dataset for Job Skill Demand Forecasting and Benchmarking&#34;](https://arxiv.org/pdf/2406.11920). Please star, watch and fork our repo for the active updates!
 
 ## 1. Overview
 
@@ -44,19 +44,19 @@ Step 2: Install library
 pip install -r requirements.txt
 ```
 
-## 3. Dataset 
-Our dataset comprises five components for each granularity level: job skill demand sequences, job skill demand proportion sequences, ID mapping index, the indexes of skills with structural breaks, and skill co-occurrence graph, which can be found in dataset.
+## 3. Dataset
 
+Our dataset comprises five components for each granularity level: job skill demand sequences, job skill demand proportion sequences, ID mapping index, the indexes of skills with structural breaks, and skill co-occurrence graph, which can be found in dataset.
 
 #### 3.1 Job-SDF Data
 
-|  | Job AD|Region  | L1-Occupation | L2-Occupation  | Company   | Skill |
-| ------- |  ------- | ------- | -------- | ------- | ------- | ------ |
-| Size     | 10.35 million |7| 14       | 52 | 521 | 2335 |
+|      | Job AD        | Region | L1-Occupation | L2-Occupation | Company | Skill |
+| ---- | ------------- | ------ | ------------- | ------------- | ------- | ----- |
+| Size | 10.35 million | 7      | 14            | 52            | 521     | 2324  |
 
 ##### 3.1.1 Guidance on data usage and processing
 
-We store the processed files in the **'./dataset'** directory. 
+We store the processed files in the **'./dataset'** directory.
 The file information in each directory is as follows:
 
 ```
@@ -72,20 +72,25 @@ The file information in each directory is as follows:
 ## 4. How to Run
 
 ### 4.1 Traditional Methods
+
 ```bash
 cd benchmark/traditional_method
 python main.py [-h] [--data_name {r0, r1,...}]
       [--model {ARIMA, prophet}]
       [--mode {count, rate,...}]
 ```
+
 ### 4.2 Multi-variate time series forecasting
+
 ```bash
 cd benchmark/multivariate_time_series
 python run.py [-h] [--root_path {../../dataset/demand, ../../dataset/proportion}]
       [--data_path {r0.parquet, r1.parquet,...}]
       [--model {LSTM, CHGH, Autoformer,Crossformer,...}]
 ```
+
 ### 4.3 Pre-DyGAE
+
 ```bash
 run data_process.ipynb
 cd benchmark/predygae
@@ -93,7 +98,9 @@ sh scripts/stage1.sh {r0,r1,...}
 sh scripts/stage2.sh {r0,r1,...} 24 36
 sh scripts/stage3.sh {r0,r1,...} 24 36
 ```
+
 ### 4.4 Graph-based time series forecasting
+
 ```bash
 run data_process.ipynb
 cd benchmark/graph_method
@@ -101,7 +108,6 @@ python main.py [-h] [--data_name {r0, r1,...}]
       [--model {EvolveGCNH, EvolveGCNO}]
       [--mode {count, rate,...}]
 ```
-
 
 ## 5 Directory Structure
 
