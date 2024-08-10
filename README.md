@@ -2,7 +2,7 @@
   <img src="figs/title.png" alt="Title Image">
     <p> 
     	<b>
-        Job-SDF: A Multi-Granularity Dataset for Job Skill Demand Forecasting and Benchmarking <a href="https://arxiv.org/pdf/2406.11920" title="PDF">PDF</a>
+        Job-SDF: A Multi-Granularity Dataset for Job Skill Demand Forecasting and Benchmarking<a href="https://arxiv.org/pdf/2406.11920" title="PDF">PDF</a>
         </b>
     </p>
 
