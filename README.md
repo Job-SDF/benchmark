@@ -62,6 +62,8 @@ The file information in each directory is as follows:
 ```
 ./demand    These are presented in tabular files, where each row represents a specific skill, and each column corresponds to a different time slice (month). Each cell within the table contains a numerical value that reflects the demand for the respective skill during that month.
 
+./entity_map    The specific name index of L1 profession, L2 profession, region, and skill is stored here.
+
 ./proportion    This component is also formatted in tabular files similar to the skill demand sequences. However, each cell in these tables displays a value between 0 and 1, representing the proportion of demand.
 
 ./structural_breaks_index     In the provided dataset, data concerning skills that have experienced structural breaks are organized in JSON format. Each granularity level is represented by a separate JSON file, which contains a list of indexes. These indexes correspond to the skills that have undergone structural breaks and can be directly mapped to the skill indexes in the skill demand sequences. The purpose of supplying this data is to facilitate research on the demand trends of skills that have exhibited structural breaks, enabling a detailed analysis of their demand dynamics over time.
@@ -118,6 +120,7 @@ Job-SDF
  |-- benchmark
  |-- dataset  # Job-SDF_data
  |    |-- demand
+ |    |-- entity_map
  |    |-- graph
  |    |-- proportion
  |    |-- structural_breaks_index
