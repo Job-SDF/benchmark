@@ -9,12 +9,12 @@
 ---
 
 <p align="center">
-  <a href="## Overview">Overview</a> •
-  <a href="## Installation">Installation</a> •
-  <a href="## Dataset">Dataset</a> •
-  <a href="## How to Run">How to Run </a> •
-  <a href="## Directory Structure">Directory Structure</a> •
-  <a href="## Citation">Citation</a> 
+  <a href="## 1. Overview">Overview</a> •
+  <a href="## 2. Installation">Installation</a> •
+  <a href="## 3. Dataset">Dataset</a> •
+  <a href="## 4. How to Run">How to Run </a> •
+  <a href="## 5. Directory Structure">Directory Structure</a> •
+  <a href="## 6. Citation">Citation</a> 
 </p>
 </div>
 
@@ -126,16 +126,15 @@ Job-SDF
  |-- README.md
 ```
 
-<!-- ## 6 Citation
+## 6 Citation
 
 If you find our work is useful for your research, please consider citing:
 
 ```bash
-@article{ning2024uukg,
-  title={UUKG: unified urban knowledge graph dataset for urban spatiotemporal prediction},
-  author={Ning, Yansong and Liu, Hao and Wang, Hao and Zeng, Zhenyu and Xiong, Hui},
-  journal={Advances in Neural Information Processing Systems},
-  volume={36},
+@article{chen2024job,
+  title={Job-SDF: A Multi-Granularity Dataset for Job Skill Demand Forecasting and Benchmarking},
+  author={Chen, Xi and Qin, Chuan and Fang, Chuyu and Wang, Chao and Zhu, Chen and Zhuang, Fuzhen and Zhu, Hengshu and Xiong, Hui},
+  journal={arXiv preprint arXiv:2406.11920},
   year={2024}
 }
 ```
