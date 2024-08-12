@@ -23,14 +23,14 @@ if __name__ == '__main__':
 
     # data loader
     parser.add_argument('--data', type=str, default='job_count_r0', help='dataset type')
-    parser.add_argument('--root_path', type=str, default='../../data/month/', help='root path of the data file')
-    parser.add_argument('--data_path', type=str, default='job_count_r0.csv', help='data file')
+    parser.add_argument('--root_path', type=str, default='../../dataset/demand/', help='root path of the data file')
+    parser.add_argument('--data_path', type=str, default='r0.parquet', help='data file')
     parser.add_argument('--features', type=str, default='M',
                         help='forecasting task, options:[M, S, MS]; M:multivariate predict multivariate, S:univariate predict univariate, MS:multivariate predict univariate')
     parser.add_argument('--target', type=str, default='OT', help='target feature in S or MS task')
     parser.add_argument('--freq', type=str, default='h',
                         help='freq for time features encoding, options:[s:secondly, t:minutely, h:hourly, d:daily, b:business days, w:weekly, m:monthly], you can also use more detailed freq like 15min or 3h')
-    parser.add_argument('--checkpoints', type=str, default='/group/csl/chenxi02/tokn/.cache/', help='location of model checkpoints')
+    parser.add_argument('--checkpoints', type=str, default='.cache/checkpoints', help='location of model checkpoints')
 
     # forecasting task
     parser.add_argument('--seq_len', type=int, default=6, help='input sequence length')
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_workers', type=int, default=10, help='data loader num workers')
     parser.add_argument('--itr', type=int, default=5, help='experiments times')
     parser.add_argument('--train_epochs', type=int, default=10, help='train epochs')
-    parser.add_argument('--batch_size', type=int, default=1, help='batch size of train input data')
+    parser.add_argument('--batch_size', type=int, default=16, help='batch size of train input data')
     parser.add_argument('--patience', type=int, default=3, help='early stopping patience')
     parser.add_argument('--learning_rate', type=float, default=0.0001, help='optimizer learning rate')
     parser.add_argument('--des', type=str, default='test', help='exp description')
@@ -93,7 +93,7 @@ if __name__ == '__main__':
     parser.add_argument('--use_amp', action='store_true', help='use automatic mixed precision training', default=False)
 
     # GPU
-    parser.add_argument('--use_gpu', type=int, default=0, help='use gpu')
+    parser.add_argument('--use_gpu', type=int, default=1, help='use gpu')
     parser.add_argument('--gpu', type=int, default=0, help='gpu')
     parser.add_argument('--use_multi_gpu', action='store_true', help='use multiple gpus', default=False)
     parser.add_argument('--devices', type=str, default='0,1', help='device ids of multile gpus')
@@ -183,12 +183,12 @@ if __name__ == '__main__':
                 args.des, ii)
 
             folder_path = 'results/' + setting + '/'
-            if not os.path.exists(f"{folder_path}/metrics.npy"):
-                print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
-                exp.train(setting)
-                print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
-                exp.test(setting)
-                torch.cuda.empty_cache()
+            # if not os.path.exists(f"{folder_path}/metrics.npy"):
+            print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
+            exp.train(setting)
+            print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
+            exp.test(setting)
+            torch.cuda.empty_cache()
     else:
         ii = 0
         setting = '{}_{}_{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_expand{}_dc{}_fc{}_eb{}_dt{}_{}_{}'.format(
