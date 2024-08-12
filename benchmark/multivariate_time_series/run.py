@@ -18,7 +18,7 @@ if __name__ == '__main__':
                         help='task name, options:[long_term_forecast, short_term_forecast, imputation, classification, anomaly_detection]')
     parser.add_argument('--is_training', type=int, default=1, help='status')
     parser.add_argument('--model_id', type=str, default='0', help='model id')
-    parser.add_argument('--model', type=str, default='LSTM',
+    parser.add_argument('--model', type=str, default='DLinear',
                         help="model name, options: ['LSTM' ,'CHGH', 'Autoformer', 'Crossformer', 'DLinear', 'ETSformer', 'FEDformer', 'FiLM', 'FreTS', 'Informer', 'iTransformer', 'Koopa', 'LightTS', 'MICN', 'Nonstationary_Transformer', 'PatchTST', 'Pyraformer', 'Reformer', 'SegRNN', 'TemporalFusionTransformer', 'TiDE', 'TimeMixer', 'TimesNet', 'Transformer', 'TSMixer']")
 
     # data loader
@@ -37,7 +37,7 @@ if __name__ == '__main__':
     parser.add_argument('--label_len', type=int, default=1, help='start token length')
     parser.add_argument('--pred_len', type=int, default=3, help='prediction sequence length')
     parser.add_argument('--seasonal_patterns', type=str, default='Monthly', help='subset for M4')
-    parser.add_argument('--inverse', action='store_true', help='inverse output data', default=True)
+    parser.add_argument('--inverse', action='store_true', help='inverse output data', default=False)
 
     # inputation task
     parser.add_argument('--mask_rate', type=float, default=0.25, help='mask ratio')
@@ -81,10 +81,10 @@ if __name__ == '__main__':
                         help='the length of segmen-wise iteration of SegRNN')
 
     # optimization
-    parser.add_argument('--num_workers', type=int, default=10, help='data loader num workers')
+    parser.add_argument('--num_workers', type=int, default=32, help='data loader num workers')
     parser.add_argument('--itr', type=int, default=5, help='experiments times')
     parser.add_argument('--train_epochs', type=int, default=10, help='train epochs')
-    parser.add_argument('--batch_size', type=int, default=16, help='batch size of train input data')
+    parser.add_argument('--batch_size', type=int, default=4, help='batch size of train input data')
     parser.add_argument('--patience', type=int, default=3, help='early stopping patience')
     parser.add_argument('--learning_rate', type=float, default=0.0001, help='optimizer learning rate')
     parser.add_argument('--des', type=str, default='test', help='exp description')
