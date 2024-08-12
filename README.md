@@ -62,7 +62,7 @@ The file information in each directory is as follows:
 ```
 ./demand    These are presented in tabular files, where each row represents a specific skill, and each column corresponds to a different time slice (month). Each cell within the table contains a numerical value that reflects the demand for the respective skill during that month.
 
-./entity_map    The specific name index of L1 profession, L2 profession, region, and skill is stored here.
+./entity_map    The specific name index tables of L1 occupations, L2 occupations, regions, and skills are stored here.
 
 ./proportion    This component is also formatted in tabular files similar to the skill demand sequences. However, each cell in these tables displays a value between 0 and 1, representing the proportion of demand.
 
