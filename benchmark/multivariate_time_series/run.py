@@ -2,6 +2,9 @@ import argparse
 import os
 import torch
 from exp.exp_long_term_forecasting import Exp_Long_Term_Forecast
+from exp.exp_long_term_forecasting_fair import Exp_long_term_forecasting_fair
+from exp.exp_long_term_forecasting_break import Exp_long_term_forecasting_break
+from exp.exp_long_term_forecasting_low import Exp_long_term_forecasting_low
 from exp.exp_imputation import Exp_Imputation
 from exp.exp_short_term_forecasting import Exp_Short_Term_Forecast
 from exp.exp_anomaly_detection import Exp_Anomaly_Detection
@@ -9,6 +12,16 @@ from exp.exp_classification import Exp_Classification
 from utils.print_args import print_args
 import random
 import numpy as np
+
+dataset_size = {
+    "r0": 2335,
+    "region": 16345,
+    "r1": 32690,
+    "r2": 121420,
+    "r1-region": 228830,
+    "r2-region": 849940,
+    "company": 1216535,
+}
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='TimesNet')
@@ -18,13 +31,13 @@ if __name__ == '__main__':
                         help='task name, options:[long_term_forecast, short_term_forecast, imputation, classification, anomaly_detection]')
     parser.add_argument('--is_training', type=int, default=1, help='status')
     parser.add_argument('--model_id', type=str, default='0', help='model id')
-    parser.add_argument('--model', type=str, default='DLinear',
+    parser.add_argument('--model', type=str, default='PatchTST',
                         help="model name, options: ['LSTM' ,'CHGH', 'Autoformer', 'Crossformer', 'DLinear', 'ETSformer', 'FEDformer', 'FiLM', 'FreTS', 'Informer', 'iTransformer', 'Koopa', 'LightTS', 'MICN', 'Nonstationary_Transformer', 'PatchTST', 'Pyraformer', 'Reformer', 'SegRNN', 'TemporalFusionTransformer', 'TiDE', 'TimeMixer', 'TimesNet', 'Transformer', 'TSMixer']")
 
     # data loader
-    parser.add_argument('--data', type=str, default='job_count_r0', help='dataset type')
+    parser.add_argument('--data', type=str, default='job_demand_region', help='dataset type')
     parser.add_argument('--root_path', type=str, default='../../dataset/demand/', help='root path of the data file')
-    parser.add_argument('--data_path', type=str, default='r0.parquet', help='data file')
+    parser.add_argument('--data_path', type=str, default='region.parquet', help='data file')
     parser.add_argument('--features', type=str, default='M',
                         help='forecasting task, options:[M, S, MS]; M:multivariate predict multivariate, S:univariate predict univariate, MS:multivariate predict univariate')
     parser.add_argument('--target', type=str, default='OT', help='target feature in S or MS task')
@@ -37,7 +50,7 @@ if __name__ == '__main__':
     parser.add_argument('--label_len', type=int, default=1, help='start token length')
     parser.add_argument('--pred_len', type=int, default=3, help='prediction sequence length')
     parser.add_argument('--seasonal_patterns', type=str, default='Monthly', help='subset for M4')
-    parser.add_argument('--inverse', action='store_true', help='inverse output data', default=False)
+    parser.add_argument('--inverse', action='store_true', help='inverse output data', default=True)
 
     # inputation task
     parser.add_argument('--mask_rate', type=float, default=0.25, help='mask ratio')
@@ -50,9 +63,9 @@ if __name__ == '__main__':
     parser.add_argument('--d_conv', type=int, default=4, help='conv kernel size for Mamba')
     parser.add_argument('--top_k', type=int, default=5, help='for TimesBlock')
     parser.add_argument('--num_kernels', type=int, default=6, help='for Inception')
-    parser.add_argument('--enc_in', type=int, default=2335, help='encoder input size')
-    parser.add_argument('--dec_in', type=int, default=2335, help='decoder input size')
-    parser.add_argument('--c_out', type=int, default=2335, help='output size')
+    parser.add_argument('--enc_in', type=int, default=2, help='encoder input size')
+    parser.add_argument('--dec_in', type=int, default=2, help='decoder input size')
+    parser.add_argument('--c_out', type=int, default=2, help='output size')
     parser.add_argument('--d_model', type=int, default=512, help='dimension of model')
     parser.add_argument('--n_heads', type=int, default=8, help='num of heads')
     parser.add_argument('--e_layers', type=int, default=2, help='num of encoder layers')
@@ -82,9 +95,9 @@ if __name__ == '__main__':
 
     # optimization
     parser.add_argument('--num_workers', type=int, default=32, help='data loader num workers')
-    parser.add_argument('--itr', type=int, default=5, help='experiments times')
-    parser.add_argument('--train_epochs', type=int, default=10, help='train epochs')
-    parser.add_argument('--batch_size', type=int, default=4, help='batch size of train input data')
+    parser.add_argument('--itr', type=int, default=1, help='experiments times')
+    parser.add_argument('--train_epochs', type=int, default=20, help='train epochs')
+    parser.add_argument('--batch_size', type=int, default=1, help='batch size of train input data')
     parser.add_argument('--patience', type=int, default=3, help='early stopping patience')
     parser.add_argument('--learning_rate', type=float, default=0.0001, help='optimizer learning rate')
     parser.add_argument('--des', type=str, default='test', help='exp description')
@@ -93,7 +106,7 @@ if __name__ == '__main__':
     parser.add_argument('--use_amp', action='store_true', help='use automatic mixed precision training', default=False)
 
     # GPU
-    parser.add_argument('--use_gpu', type=int, default=1, help='use gpu')
+    parser.add_argument('--use_gpu', type=int, default=0, help='use gpu')
     parser.add_argument('--gpu', type=int, default=0, help='gpu')
     parser.add_argument('--use_multi_gpu', action='store_true', help='use multiple gpus', default=False)
     parser.add_argument('--devices', type=str, default='0,1', help='device ids of multile gpus')
@@ -126,10 +139,15 @@ if __name__ == '__main__':
     parser.add_argument('--discdtw', default=False, action="store_true", help="Discrimitive DTW warp preset augmentation")
     parser.add_argument('--discsdtw', default=False, action="store_true", help="Discrimitive shapeDTW warp preset augmentation")
     parser.add_argument('--extra_tag', type=str, default="", help="Anything extra")
+    parser.add_argument('--task_mode', type=str, default="_break", help="Anything extra")
+    parser.add_argument('--break_mode', type=str, default="exponential", choices=['bartlett', 'parzen', 'tukey-hanning', 'exponential', 'rayleigh'])
 
     args = parser.parse_args()
     # args.use_gpu = True if torch.cuda.is_available() and args.use_gpu else False
     args.use_gpu = args.use_gpu == 1
+    args.enc_in = args.dec_in = args.c_out = dataset_size[args.data_path.split('.')[0]]
+    args.skill_num = dataset_size['r0']
+
     print(torch.cuda.is_available())
 
     if args.use_gpu and args.use_multi_gpu:
@@ -142,7 +160,15 @@ if __name__ == '__main__':
     print_args(args)
 
     if args.task_name == 'long_term_forecast':
-        Exp = Exp_Long_Term_Forecast
+        if args.task_mode == '_fair':
+            Exp = Exp_long_term_forecasting_fair
+        elif args.task_mode == '_break':
+            Exp = Exp_long_term_forecasting_break
+            args.task_mode += f'_{args.break_mode}'
+        elif args.task_mode == '_low':
+            Exp = Exp_long_term_forecasting_low
+        else:
+            Exp = Exp_Long_Term_Forecast
     elif args.task_name == 'short_term_forecast':
         Exp = Exp_Short_Term_Forecast
     elif args.task_name == 'imputation':
@@ -151,8 +177,6 @@ if __name__ == '__main__':
         Exp = Exp_Anomaly_Detection
     elif args.task_name == 'classification':
         Exp = Exp_Classification
-    else:
-        Exp = Exp_Long_Term_Forecast
     
     if args.is_training:
         for ii in range(args.itr):
@@ -162,7 +186,7 @@ if __name__ == '__main__':
             # setting record of experiments
             exp = Exp(args)  # set experiments
             setting = '{}_{}_{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_expand{}_dc{}_fc{}_eb{}_dt{}_{}_{}'.format(
-                args.task_name,
+                args.task_name + args.task_mode,
                 args.model_id,
                 args.model,
                 args.data,
@@ -192,7 +216,7 @@ if __name__ == '__main__':
     else:
         ii = 0
         setting = '{}_{}_{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_expand{}_dc{}_fc{}_eb{}_dt{}_{}_{}'.format(
-            args.task_name,
+            args.task_name + args.task_mode,
             args.model_id,
             args.model,
             args.data,
