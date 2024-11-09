@@ -27,8 +27,9 @@ Official repository of paper [&#34;Job-SDF: A Multi-Granularity Dataset for Job 
   <img src="https://github.com/usail-hkust/UUKG/blob/main/UrbanKG.png" width="300">
 </div> -->
 
-In a rapidly evolving job market, skill demand forecasting is crucial as it enables policymakers and businesses to anticipate and adapt to changes, ensuring that workforce skills align with market needs, thereby enhancing productivity and competitiveness. Additionally, by identifying emerging skill requirements, it directs individuals towards relevant training and education opportunities, promoting continuous self-learning and development. However, the absence of comprehensive datasets presents a significant challenge, impeding research and the advancement of this field. To bridge this gap, we present **Job-SDF**, a dataset designed to train and benchmark job-skill demand forecasting models. Based on 10.35 million public job advertisements collected from major online recruitment platforms in China between 2021 and 2023, this dataset encompasses monthly recruitment demand for 2,324 types of skills across 521 companies. Our dataset uniquely enables evaluating skill demand forecasting models at various granularities, including occupation, company, and regional levels. We benchmark a range of models on this dataset, evaluating their performance in standard scenarios, in predictions focused on lower value ranges, and in the presence of structural breaks, providing new insights for further research.
-
+In a rapidly evolving job market, skill demand forecasting is crucial as it enables policymakers and businesses to anticipate and adapt to changes, ensuring that workforce skills align with market needs, thereby enhancing productivity and competitiveness. Additionally, by identifying emerging skill requirements, it directs individuals towards relevant training and education opportunities, promoting continuous self-learning and development. However, the absence of comprehensive datasets presents a significant challenge, impeding research and the advancement of this field. To bridge this gap, we present **Job-SDF**, a dataset designed to train and benchmark job-skill demand forecasting models. Based on millions of public job advertisements collected from online recruitment platforms, this dataset encompasses monthly recruitment demand.
+Our dataset uniquely enables evaluating skill demand forecasting models at various granularities, including occupation, company, and regional levels. 
+We benchmark a range of models on this dataset, evaluating their performance in standard scenarios, in predictions focused on lower value ranges, and in the presence of structural breaks, providing new insights for further research. Our code and dataset are publicly accessible via the https://github.com/Job-SDF/benchmark.
 ## 2. Installation
 
 Step 1: Create a python 3.8 environment and install dependencies:
@@ -50,9 +51,9 @@ Our dataset comprises five components for each granularity level: job skill dema
 
 #### 3.1 Job-SDF Data
 
-|      | Job AD        | Region | L1-Occupation | L2-Occupation | Company | Skill |
-| ---- | ------------- | ------ | ------------- | ------------- | ------- | ----- |
-| Size | 10.35 million | 7      | 14            | 52            | 521     | 2324  |
+|      | L1-Occupation | L2-Occupation | Company | Skill |
+| ---- | ------------- | ------------- | ------- | ----- |
+| Size | 14            | 52            | 521     | 2324  |
 
 ##### 3.1.1 Guidance on data usage and processing
 
@@ -137,7 +138,7 @@ If you find our work is useful for your research, please consider citing:
 @article{chen2024job,
   title={Job-SDF: A Multi-Granularity Dataset for Job Skill Demand Forecasting and Benchmarking},
   author={Chen, Xi and Qin, Chuan and Fang, Chuyu and Wang, Chao and Zhu, Chen and Zhuang, Fuzhen and Zhu, Hengshu and Xiong, Hui},
-  journal={arXiv preprint arXiv:2406.11920},
+  journal={Advances in neural information processing systems},
   year={2024}
 }
 ```
